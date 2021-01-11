@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmls:th="http://www.thymeleaf.org" lang="es">
+<head>
+<meta charset="ISO-8859-1">
+<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/jquery.min.js}"></script>
+
+<title>Alumnos</title>
+</head>
+<body style="background: #8396F3;">
+	<div class="container mt-3">
+		<div class="card">
+		  <div class="card-header bg-primary text-light">
+		   	 <h5 class="card-title text-center">Matricula de Alumnos</h5>
+		  </div>
+		  
+		  <div class="card-body">
+		  		
+		  		<div class="card"  style="width: 80%;">
+		  			<div class="card-body">
+		  				<form th:action="@{/alumnos/save}" method="post">
+				  			 <div class="mb-3 row">
+							    <label class="col-sm-4 col-form-label">Nro Matricula</label>
+							    <div class="col-sm-8">
+							      <input type="text" readonly class="form-control-plaintext" 
+							      name="nroMatr" id="nroMatr" th:value="${nroMat}">
+							    </div>
+							  </div>
+							  <div class="mb-3 row">
+							    <label class="col-sm-4 col-form-label">Nombres y Apellidos</label>
+							    <div class="col-sm-8">
+							      <input type="text" class="form-control" id="nomAlu" name="nomAlu" required="required">
+							    </div>
+							  </div>
+							   <div class="mb-3 row">
+							    <label class="col-sm-4 col-form-label">Tipo de Alumno</label>
+							    <div class="col-sm-8">
+							       <div class="form-check form-check-inline">
+									  <input class="form-check-input" type="radio" name="tipo" id="inlineRadio1" value="1">
+									  <label class="form-check-label" for="inlineRadio1">1/2 Beca</label>
+									</div>
+									<div class="form-check form-check-inline">
+									  <input class="form-check-input" type="radio" name="tipo" id="inlineRadio2" value="2">
+									  <label class="form-check-label" for="inlineRadio2">1/4 Beca</label>
+									</div>
+									<div class="form-check form-check-inline">
+									  <input class="form-check-input" type="radio" name="tipo" id="inlineRadio3" value="3" checked="checked" >
+									  <label class="form-check-label" for="inlineRadio3">Regular</label>
+									</div>
+							      
+							    </div>
+							  </div>
+							   <div class="mb-3 row">
+							    <label class="col-sm-4 col-form-label">Pago</label>
+							    <div class="col-sm-8">
+							      <input type="text" class="form-control-plaintext" id="pago" name="pago" readonly="readonly">
+							    </div>
+							  </div>
+							  
+							   <div class="mb-3 row">
+							   		<div class="col-sm-5" style="text-align: right;">
+							   		<input type="hidden" name="codCur" id="codCur" th:value="${codCurso}">
+							   			<button type="submit" class="btn btn-primary" 
+							   			th:if="${curso.nroVac >0}">Grabar</button>
+							   			
+							   			<button type="submit" class="btn btn-primary" 
+							   			th:unless="${curso.nroVac >0}" disabled="disabled">Cursos no disponibles</button>
+							   		</div>		
+							  </div>
+				  		</form>
+		  			</div>
+		  		</div>
+		  
+		  
+		  		<h3 th:text="'Lista de alumnos del curso : '+${curso.nomCur}"></h3>
+		  		<h4 th:text="'Costo : '+${curso.costo}"></h4>
+			   <div th:if="${mensaje !=null}" class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+				  <strong>Mensaje! </strong><span th:text="${mensaje}"></span>
+				  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			   </div>
+		 		
+		 		<a th:href="@{/}" class="btn btn-success" title="ir al listado de cursos">Ver Cursos</a>
+			   <table class="table table-bordered table-striped mt-3">
+					<tr>
+						<th>#</th>
+						<th>Nro Matricula</th>
+						<th>Nombre Y Apellido</th>
+						<th>Tipo</th>
+						<th>Pago</th>
+						<th>Anular</th>
+					</tr>
+					<tr th:each="alumno , iterator : ${alumnos}">
+						<td th:text="${iterator.index+1}"></td>
+						<td th:text="${alumno.nroMatr}"></td>
+						<td th:text="${alumno.nomAlu}"></td>
+						<td th:switch="${alumno.tipo}">
+							<p th:case="1">1/2 beca</p>
+							<p th:case="2">1/4 beca</p>
+							<p th:case="*">Regular</p>
+						</td>
+						<td th:text="${alumno.pago}"></td>
+						<td>
+							<a th:href="@{/alumnos/delete/}+${alumno.nroMatr}+'/'+${codCurso}">Eliminar</a>
+						</td>
+					</tr>
+					<tr th:if="${alumnos.size() == 0}">
+						<td colspan="6" class="text-center">No se encontraron registros</td>
+					</tr>
+				</table>
+		  </div>
+		</div>
+	</div>
+	
+</body>
+<script type="text/javascript">
+	$(document).ready(function(){
+		CargarCosto();
+	});
+	
+	$('input[type=radio][name=tipo]').change(function(){
+		CargarCosto();
+	});
+	
+	function CargarCosto(){
+		var costo = "[[${curso.costo}]]";
+		var tipo = $('input[name=tipo]:checked').val();
+		var desc = [0.5 , 0.25 , 0];
+		costo = costo - costo * desc[tipo-1];
+		$("#pago").val(costo);
+	}
+</script>
+</html>

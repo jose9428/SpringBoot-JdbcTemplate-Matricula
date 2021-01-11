@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmls:th="http://www.thymeleaf.org" lang="es">
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<table class="table table-bordered table-striped">
+		<tr>
+			<th>#</th>
+			<th>Codigo</th>
+			<th>Asignatura</th>
+			<th>Costo</th>
+			<th>Vacantes</th>
+			<th>Matricula</th>
+		</tr>
+		<tr th:each="curso , iterator: ${cursos}">
+			<td th:text="${iterator.index+1}"></td>
+			<td th:text="${curso.codCur}"></td>
+			<td th:text="${curso.nomCur}"></td>
+			<td th:text="${curso.costo}"></td>
+			<!-- 
+			<td th:text="${curso.nroVac}" th:if="${curso.nroVac <10}"></td>
+			 -->
+			<td>
+				<span th:text="${curso.nroVac}" />
+				<span th:if="${curso.nroVac>=10}" class="badge rounded-pill bg-success" style="text-align: left;">Vacantes disponibles</span>
+				<span th:if="${curso.nroVac==0}" class="badge rounded-pill bg-danger" style="text-align: left;">Vacantes no disponible</span>
+				<span th:if="${curso.nroVac!=0 and curso.nroVac < 10}" class="badge rounded-pill bg-danger" style="text-align: left;">Ultimas vacantes</span>
+			</td>
+			<td>
+				<a th:href="@{/alumnos?id=}+${curso.codCur}" class="btn btn-primary">Alumnos</a> 
+			</td>
+		</tr>
+		<tr th:if="${cursos.isEmpty or cursos.size() == 0}">
+			<td colspan="6" style="text-align: center;">No se encontraron registros</td>
+		</tr>
+	</table>
+</body>
+</html>
